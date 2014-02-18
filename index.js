@@ -114,13 +114,27 @@ function co(fn) {
  */
 
 function toThunk(obj, ctx) {
-  var fn = obj;
-  if (Array.isArray(obj)) fn = objectToThunk.call(ctx, obj);
-  if ('[object Object]' == toString.call(obj)) fn = objectToThunk.call(ctx, obj);
-  if (isGeneratorFunction(obj)) obj = obj.call(ctx);
-  if (isGenerator(obj)) fn = co(obj);
-  if (isPromise(obj)) fn = promiseToThunk(obj);
-  return fn;
+  if (isGeneratorFunction(obj)) {
+    return obj.call(ctx);
+  }
+  
+  if (isGenerator(obj)) {
+    return co(obj);
+  }
+  
+  if (isPromise(obj)) {
+    return promiseToThunk(obj);
+  }
+  
+  if (Array.isArray(obj)) {
+    return arrayToThunk.call(ctx, obj);
+  }
+  
+  if ('[object Object]' == toString.call(obj)) {
+    return objectToThunk.call(ctx, obj);
+  }
+  
+  return obj;
 }
 
 /**
