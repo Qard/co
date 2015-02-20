@@ -32,6 +32,25 @@ co.wrap = function (fn) {
 };
 
 /**
+ * Wrap the given generator `fn` into a
+ * callback. This is useful for middleware.
+ * 
+ *
+ * @param {GeneratorFunction} fn
+ * @return {Function}
+ * @api public
+ */
+co.callback = function (fn) {
+  // The cb argument is included for things
+  // like mocha that check arguments length
+  return function (cb) {
+    var args = slice.call(arguments)
+    cb = args.pop()
+    co(gen.apply(this, args)).then(cb.bind(null, null), cb)
+  }
+}
+
+/**
  * Execute the generator function or a generator
  * and return a promise.
  *
